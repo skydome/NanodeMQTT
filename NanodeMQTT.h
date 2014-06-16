@@ -32,6 +32,7 @@
 #define NanodeMQTT_h
 
 #include <NanodeUIP.h>
+#include <avr/pgmspace.h>
 
 
 // Uncomment to enable debugging of NanodeMQTT
@@ -39,7 +40,7 @@
 
 
 #define MQTT_DEFAULT_PORT        (1883)
-#define MQTT_DEFAULT_KEEP_ALIVE  (15)
+#define MQTT_DEFAULT_KEEP_ALIVE  (120)
 
 #define MQTT_MAX_CLIENT_ID_LEN   (23)
 #define MQTT_MAX_PAYLOAD_LEN     (127)
@@ -103,48 +104,48 @@ enum mqtt_state {
 #endif
 
 
-typedef void (*mqtt_callback_t) (const char* topic, uint8_t* payload, int payload_length);
+typedef void (*mqtt_callback_t) (const char* topic PROGMEM, uint8_t* payload PROGMEM, int payload_length PROGMEM);
 
 
 
 class NanodeMQTT {
 private:
-  NanodeUIP *uip;
-  char client_id[MQTT_MAX_CLIENT_ID_LEN+1];
-  uip_ipaddr_t addr;
-  uint16_t port;
-  uint16_t keep_alive;
-  uint16_t message_id;
-  uint8_t state;
-  uint8_t ping_pending;
-  uint8_t blocking_mode;
-  int8_t error_code;
+  NanodeUIP *uip PROGMEM;
+  char client_id[MQTT_MAX_CLIENT_ID_LEN+1] PROGMEM;
+  uip_ipaddr_t addr PROGMEM;
+  uint16_t port PROGMEM;
+  uint16_t keep_alive PROGMEM;
+  uint16_t message_id PROGMEM;
+  uint8_t state PROGMEM;
+  uint8_t ping_pending PROGMEM;
+  uint8_t blocking_mode PROGMEM;
+  int8_t error_code PROGMEM;
 
-  uint8_t *buf;
-  uint8_t pos;
+  uint8_t *buf PROGMEM;
+  uint8_t pos PROGMEM;
 
-  struct timer receive_timer;
-  struct timer transmit_timer;
+  struct timer receive_timer PROGMEM;
+  struct timer transmit_timer PROGMEM;
 
   // Publishing
   // FIXME: can we do without these buffers
-  char payload_topic[32];
-  uint8_t payload[MQTT_MAX_PAYLOAD_LEN];
-  uint8_t payload_length;
-  uint8_t payload_retain;
+  char payload_topic[32] PROGMEM;
+  uint8_t payload[MQTT_MAX_PAYLOAD_LEN] PROGMEM;
+  uint8_t payload_length PROGMEM;
+  uint8_t payload_retain PROGMEM;
 
   // Subscribing
-  const char *subscribe_topic;
-  mqtt_callback_t callback;
+  const char *subscribe_topic PROGMEM;
+  mqtt_callback_t callback  PROGMEM;
 
 public:
   NanodeMQTT(NanodeUIP *uip);
 
-  void set_client_id(const char* client_id);
-  void set_server_addr(byte a, byte b, byte c, byte d);
-  void set_server_port(uint16_t port);
-  void set_keep_alive(uint16_t secs);
-  void set_blocking_mode(uint8_t blocking);
+  void set_client_id(const char* client_id PROGMEM);
+  void set_server_addr(byte a PROGMEM, byte b PROGMEM, byte c PROGMEM, byte d PROGMEM);
+  void set_server_port(uint16_t port PROGMEM);
+  void set_keep_alive(uint16_t secs PROGMEM);
+  void set_blocking_mode(uint8_t blocking PROGMEM);
   void set_callback(mqtt_callback_t callback);
 
   void connect();
@@ -153,9 +154,9 @@ public:
   uint8_t get_state();
   int8_t get_error_code();
 
-  void publish(const char* topic, const char* payload);
-  void publish(const char* topic, const uint8_t* payload, uint8_t plength);
-  void publish(const char* topic, const uint8_t* payload, uint8_t plength, uint8_t retained);
+  void publish(const char* topic PROGMEM, const char* payload PROGMEM);
+  void publish(const char* topic PROGMEM, const uint8_t* payload PROGMEM, uint8_t plength PROGMEM);
+  void publish(const char* topic PROGMEM, const uint8_t* payload PROGMEM, uint8_t plength PROGMEM, uint8_t retained PROGMEM);
 
   void subscribe(const char* topic);
 
@@ -173,11 +174,11 @@ public:
 
 private:
   // Packet assembly functions
-  void init_packet(uint8_t header);
-  void append_byte(uint8_t b);
-  void append_word(uint16_t s);
-  void append_string(const char* str);
-  void append_data(uint8_t *data, uint8_t data_len);
+  void init_packet(uint8_t header PROGMEM);
+  void append_byte(uint8_t b PROGMEM);
+  void append_word(uint16_t s PROGMEM);
+  void append_string(const char* str PROGMEM);
+  void append_data(uint8_t *data PROGMEM, uint8_t data_len PROGMEM);
   void send_packet();
 };
 

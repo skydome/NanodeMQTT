@@ -108,32 +108,32 @@ static void mqtt_appcall(void)
 }
 
 
-void NanodeMQTT::set_client_id(const char* client_id)
+void NanodeMQTT::set_client_id(const char* client_id PROGMEM)
 {
   strncpy(this->client_id, client_id, MQTT_MAX_CLIENT_ID_LEN);
 }
 
-void NanodeMQTT::set_server_addr(byte a, byte b, byte c, byte d)
+void NanodeMQTT::set_server_addr(byte a PROGMEM, byte b PROGMEM, byte c PROGMEM, byte d PROGMEM)
 {
   uip_ipaddr(&this->addr, a,b,c,d);
 }
 
-void NanodeMQTT::set_server_port(uint16_t port)
+void NanodeMQTT::set_server_port(uint16_t port PROGMEM)
 {
   this->port = port;
 }
 
-void NanodeMQTT::set_keep_alive(uint16_t secs)
+void NanodeMQTT::set_keep_alive(uint16_t secs PROGMEM)
 {
   this->keep_alive = secs;
 }
 
-void NanodeMQTT::set_blocking_mode(uint8_t blocking)
+void NanodeMQTT::set_blocking_mode(uint8_t blocking PROGMEM)
 {
   this->blocking_mode = blocking;
 }
 
-void NanodeMQTT::set_callback(mqtt_callback_t callback)
+void NanodeMQTT::set_callback(mqtt_callback_t callback PROGMEM)
 {
   this->callback = callback;
 }
@@ -142,7 +142,7 @@ void NanodeMQTT::set_callback(mqtt_callback_t callback)
 // FIXME: add support for WILL
 void NanodeMQTT::connect()
 {
-  struct uip_conn *conn;
+  struct uip_conn *conn PROGMEM;
 
   // Set the client ID to the MAC address, if none is set
   if (this->client_id[0] == '\0') {
@@ -151,7 +151,7 @@ void NanodeMQTT::connect()
 
   conn = uip_connect(&this->addr, UIP_HTONS(this->port), mqtt_appcall);
   if (conn) {
-    struct mqtt_app_state *s = (struct mqtt_app_state *)&(conn->appstate);
+    struct mqtt_app_state *s  PROGMEM= (struct mqtt_app_state *)&(conn->appstate);
     s->mqtt = this;
     this->state = MQTT_STATE_WAITING;
 
@@ -204,17 +204,17 @@ void NanodeMQTT::disconnect()
    }
 }
 
-void NanodeMQTT::publish(const char* topic, const char* payload)
+void NanodeMQTT::publish(const char* topic PROGMEM, const char* payload PROGMEM)
 {
    publish(topic, (uint8_t*)payload, strlen(payload));
 }
 
-void NanodeMQTT::publish(const char* topic, const uint8_t* payload, uint8_t plength)
+void NanodeMQTT::publish(const char* topic PROGMEM, const uint8_t* payload PROGMEM, uint8_t plength PROGMEM)
 {
    publish(topic, payload, plength, 0);
 }
 
-void NanodeMQTT::publish(const char* topic, const uint8_t* payload, uint8_t plength, uint8_t retained)
+void NanodeMQTT::publish(const char* topic PROGMEM, const uint8_t* payload PROGMEM, uint8_t plength PROGMEM, uint8_t retained PROGMEM)
 {
   // FIXME: check that payload isn't bigger than UIP_APPDATASIZE (or 127 bytes)
   // FIXME: can we avoid this extra buffer?
@@ -235,7 +235,7 @@ void NanodeMQTT::publish(const char* topic, const uint8_t* payload, uint8_t plen
 // ** End of the public API **
 
 
-void NanodeMQTT::subscribe(const char* topic)
+void NanodeMQTT::subscribe(const char* topic PROGMEM)
 {
   this->subscribe_topic = topic;
 
